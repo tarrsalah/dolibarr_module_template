@@ -1,0 +1,34 @@
+version: '3'
+services:
+  web:
+    image: tarrsalah/php-apache
+    ports:
+      - "5000:80"
+    volumes:
+      - "./dolibarr:/var/www/html"
+      - ".:/var/www/html/htdocs/custom/${DOLIBARR_MODULE_NAME}"
+      - ".resources/conf.php:/var/www/html/htdocs/conf/conf.php"
+      - ".resources/documents/:/var/www/html/documents/"
+    depends_on:
+      - mariadb
+    links:
+      - mariadb
+  mariadb:
+    image: mariadb:latest
+    volumes:
+      - db_volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dolibarr
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+  adminer:
+    image: adminer
+    ports:
+      - "5001:8080"
+    depends_on:
+      - mariadb
+    links:
+      - mariadb
+volumes:
+  db_volume:
